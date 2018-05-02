@@ -1,8 +1,8 @@
-## cipher-guess
+# cipher-guess
 
 This is the source code for a tutorial I am writing about using algebraic data types and functional programming in javascript. It is a number guessing game! Exciting!
 
-**_NOTE:_** This is a copy of (evilsoft's playground)[https://github.com/evilsoft/evil-playground], with `daggy` and `readline-sync` added for our project. Thanks, @evilsoft!
+**_NOTE:_** This is a copy of [evilsoft's playground](https://github.com/evilsoft/evil-playground), with `daggy` and `readline-sync` added for our project. Thanks, @evilsoft!
 
 **_NOTE:_** This codebase has removed babel and as such requires the latest stable version of nodejs. (6.x or higher).
 
