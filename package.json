@@ -1,0 +1,34 @@
+{
+  "name": "cipher-guess",
+  "version": "0.1.0",
+  "description": "source code for the number-guessing game tutorial series",
+  "main": "index.js",
+  "scripts": {
+    "preversion": "npm test",
+    "start": "nodemon index.js -q -x 'clear && node'",
+    "test:watch": "nodemon -q -e js -x 'npm test -s | tap-spec'",
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shatteredaesthetic/cipher-guess.git"
+  },
+  "author": "Jason Polhemus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shatteredaesthetic/cipher-guess/issues"
+  },
+  "homepage": "https://github.com/shatteredaesthetic/cipher-guess#readme",
+  "dependencies": {
+    "crocks": "^0.9.0",
+    "daggy": "^1.2.0",
+    "eslint": "^4.11.0",
+    "eyes": "^0.1.8",
+    "nodemon": "^1.12.1",
+    "readline-sync": "^1.4.9"
+  },
+  "devDependencies": {
+    "tap-spec": "^4.1.1",
+    "tape": "^4.8.0"
+  }
+}
