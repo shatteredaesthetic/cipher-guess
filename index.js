@@ -1,7 +1,6 @@
 const log = require('./lib/log')
 const { Either, Reader, pipe, pipeK } = require('crocks')
 const branch = require('crocks/Pair/branch')
-const chain = require('crocks/pointfree/chain')
 const either = require('crocks/pointfree/either')
 const runWith = require('crocks/pointfree/runWith')
 const { taggedSum } = require('daggy')
