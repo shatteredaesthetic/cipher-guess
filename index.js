@@ -58,9 +58,9 @@ const env = {
 
 const result = pipe(logic(env), output)
 
-result('a')
-result(101)
-result(3)
-result(23)
-result(25)
-result(77)
+result('a') // 'Left: You need to learn to follow instructions'
+result(101) // 'Left: You need to learn to follow instructions'
+result(3) // 'Left: Too Low'
+result(23) // 'Right: Win'
+result(25) // 'Right: Close Enough'
+result(77) // 'Left: Too High'
