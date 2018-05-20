@@ -1,66 +1,20 @@
-const log = require('./lib/log')
-const { Either, Reader, pipe, pipeK } = require('crocks')
-const branch = require('crocks/Pair/branch')
+const pipe = require('crocks/helpers/pipe')
 const either = require('crocks/pointfree/either')
 const runWith = require('crocks/pointfree/runWith')
-const { taggedSum } = require('daggy')
-const { Right, Left } = Either
+const { runTests } = require('./src/logic')
+const { printLine, getGuess } = require('./src/cli')
+const { Env } = require('./src/utils')
 
-const Ord = taggedSum('Ord', {
-  LT: [],
-  EQ: [],
-  GT: []
-})
+// output : Either String String -> IO ()
+const output = either(printLine, printLine)
 
-// isTolerant : (Int, Int) -> Int -> Eq
-const isTolerant = (low, high) => n =>
-  n < low ? Ord.LT : n > high ? Ord.GT : Ord.EQ
+// logic : Env -> Int -> Either String String
+const logic = env => pipe(runTests, runWith(env))
 
-// firstTest : Int -> Either String Int
-const firstTest = n =>
-  1 <= n && n <= 100 && !isNaN(n)
-    ? Right(n)
-    : Left('You need to learn to follow instructions')
+// main : Env -> IO ()
+const main = env =>
+  getGuess(`Guess a number between 1 and 100`)
+    .map(logic(env))
+    .chain(output)
 
-// secondTest : Env -> Int -> Either String Int
-const secondTest = ({ target, tolerance }) => n =>
-  branch(target)
-    .bimap(x => x - tolerance, x => x + tolerance)
-    .merge(isTolerant)
-    .call(null, n)
-    .cata({
-      LT: () => Left('Too Low'),
-      EQ: () => Right(n),
-      GT: () => Left('Too High')
-    })
-
-// thirdTest : Env -> Int -> Either String String
-const thirdTest = ({ target }) => n =>
-  target === n ? Right('Win') : Right('Close Enough')
-
-// runTests : Env -> Int -> Either String Int
-const runTests = env => pipeK(firstTest, secondTest(env), thirdTest(env))
-
-// gameLogic : Either String Int -> Reader (Either String String)
-const gameLogic = either => Reader.ask().map(env => either.chain(runTests(env)))
-
-// logic : Env -> Int -> Either String String)
-const logic = env => pipe(Either.of, gameLogic, runWith(env))
-
-// output : Either String String -> ()
-const output = either(str => log(`Left: ${str}`), str => log(`Right: ${str}`))
-
-// env : Env
-const env = {
-  target: 23,
-  tolerance: 3
-}
-
-const result = pipe(logic(env), output)
-
-result('a') // 'Left: You need to learn to follow instructions'
-result(101) // 'Left: You need to learn to follow instructions'
-result(3) // 'Left: Too Low'
-result(23) // 'Right: Win'
-result(25) // 'Right: Close Enough'
-result(77) // 'Left: Too High'
+main(Env(23, 3)).run()
