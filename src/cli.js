@@ -14,7 +14,14 @@ const getGuess = str =>
     .chain(readLine)
     .map(s => parseInt(s, 10))
 
+// exit : () -> IO ()
+const exit = () =>
+  IO(() => {
+    process.exit()
+  })
+
 module.exports = {
+  exit,
   getGuess,
   printLine
 }

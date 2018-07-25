@@ -1,20 +1,18 @@
-const pipe = require('crocks/helpers/pipe')
+const { IO } = require('crocks')
 const either = require('crocks/pointfree/either')
-const runWith = require('crocks/pointfree/runWith')
-const { runTests } = require('./src/logic')
-const { printLine, getGuess } = require('./src/cli')
-const { Env } = require('./src/utils')
-
-// output : Either String String -> IO ()
-const output = either(printLine, printLine)
-
-// logic : Env -> Int -> Either String String
-const logic = env => pipe(runTests, runWith(env))
+const { logic } = require('./src/logic')
+const { exit, getGuess, printLine } = require('./src/cli')
+const { Env, renderFailure, renderSuccess } = require('./src/utils')
 
 // main : Env -> IO ()
 const main = env =>
   getGuess(`Guess a number between 1 and 100`)
     .map(logic(env))
-    .chain(output)
+    .chain(
+      either(
+        fail => printLine(renderFailure(fail)).chain(() => main(env)),
+        success => printLine(renderSuccess(success)).chain(exit)
+      )
+    )
 
 main(Env(23, 3)).run()
