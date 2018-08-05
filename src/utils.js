@@ -10,9 +10,6 @@ const Ord = taggedSum('Ord', {
   GT: []
 })
 
-// type Env = { target, tolerance }
-const Env = tagged('Env', ['target', 'tolerance'])
-
 // type Failure = InValid | TooHigh | TooLow
 const Failure = taggedSum('Failure', {
   InValid: ['x'],
@@ -43,7 +40,6 @@ const renderSuccess = success =>
 
 module.exports = {
   Ord,
-  Env,
   Failure,
   Success,
   renderSuccess,

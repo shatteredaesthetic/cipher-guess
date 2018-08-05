@@ -15,18 +15,25 @@ const isTolerant = (low, high) =>
   ifElse(n => n < low, K(Ord.LT), ifElse(n => n > high, K(Ord.GT), K(Ord.EQ)))
 
 // firstTest : Int -> ReaderT Env (Either Failure Int)
-const firstTest = liftFn(
-  ifElse(
-    n => !isNaN(n) && 1 <= n && n <= 100,
-    Right,
-    pipe(Failure.InValid, Left)
-  )
-)
+const firstTest = n =>
+  ask()
+    .map(({ meta: { low, high } }) =>
+      ifElse(
+        n => !isNaN(n) && low <= n && n <= high,
+        Right,
+        pipe(
+          Failure.InValid,
+          Left
+        )
+      )
+    )
+    .ap(M.of(n))
+    .chain(liftFn(I))
 
 // secondTest : Int -> ReaderT Env (Either Failure Int)
 const secondTest = n =>
   ask()
-    .map(({ tolerance, target }) =>
+    .map(({ target, meta: { tolerance } }) =>
       branch(target)
         .bimap(x => x - tolerance, x => x + tolerance)
         .merge(isTolerant)
@@ -47,19 +54,34 @@ const thirdTest = n =>
   ask()
     .map(({ target }) =>
       ifElse(
-        n => target === n,
-        pipe(Success.Equal, Right),
-        pipe(Success.InTolerance, Right)
+        x => target === x,
+        pipe(
+          Success.Equal,
+          Right
+        ),
+        pipe(
+          Success.InTolerance,
+          Right
+        )
       )
     )
     .ap(M.of(n))
     .chain(liftFn(I))
 
 // runTests : Int -> ReaderT Env (Either Failure Success)
-const runTests = pipeK(M.of, firstTest, secondTest, thirdTest)
+const runTests = pipeK(
+  M.of,
+  firstTest,
+  secondTest,
+  thirdTest
+)
 
 // logic : Env -> Int -> Either Failure Success
-const logic = env => pipe(runTests, runWith(env))
+const logic = env =>
+  pipe(
+    runTests,
+    runWith(env)
+  )
 
 module.exports = {
   logic
